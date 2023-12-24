@@ -1,66 +1,68 @@
+<?php
+session_start();
+$connection = mysqli_connect('localhost', 'root', '', 'php_crud_operations');
+$query = mysqli_query($connection, "SELECT * FROM `products`");
+$data = [];
+while ($row = mysqli_fetch_assoc($query)) {
+    $data[] = $row;
+}
+mysqli_close($connection);
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Admin Login Page</title>
-
-  <!-- Google Font: Source Sans Pro -->
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
-  <!-- Font Awesome -->
-  <link rel="stylesheet" href="assets/plugins/fontawesome-free/css/all.min.css">
-  <!-- icheck bootstrap -->
-  <link rel="stylesheet" href="assets/plugins/icheck-bootstrap/icheck-bootstrap.min.css">
-  <!-- Theme style -->
-  <link rel="stylesheet" href="assets/dist/css/adminlte.min.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
 </head>
-<body class="hold-transition login-page">
-<div class="login-box">
-  <!-- /.login-logo -->
-  <div class="card card-outline card-primary">
-    <div class="card-header text-center">
-      <a href="assets/index2.html" class="h1"><b>Admin</b>LTE</a>
-    </div>
-    <div class="card-body">
-      <p class="login-box-msg">Sign in to start your session</p>
-
-      <form action="controllers/login.php" method="post">
-        <div class="input-group mb-3">
-          <input type="email" name="email" class="form-control" placeholder="Email">
-          <div class="input-group-append">
-            <div class="input-group-text">
-              <span class="fas fa-envelope"></span>
-            </div>
-          </div>
-        </div>
-        <div class="input-group mb-3">
-          <input type="password" name="password" class="form-control" placeholder="Password">
-          <div class="input-group-append">
-            <div class="input-group-text">
-              <span class="fas fa-lock"></span>
-            </div>
-          </div>
-        </div>
-        <div class="row">
-          <!-- /.col -->
-          <div class="col-4">
-            <button type="submit" class="btn btn-primary btn-block">Sign In</button>
-          </div>
-          <!-- /.col -->
-        </div>
-      </form>
-    </div>
-    <!-- /.card-body -->
-  </div>
-  <!-- /.card -->
-</div>
-<!-- /.login-box -->
-
-<!-- jQuery -->
-<script src="assets/plugins/jquery/jquery.min.js"></script>
-<!-- Bootstrap 4 -->
-<script src="assets/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
-<!-- AdminLTE App -->
-<script src="assets/dist/js/adminlte.min.js"></script>
+<body>
+    <?php if (!isset($_SESSION['username']) && empty($_SESSION['username'])): ?>
+    <button>
+        <a style="text-decoration: none; color: #000" href="login.php">Login</a>
+    </button>
+    <?php endif; ?>
+    <?php if (isset($_SESSION['username']) && !empty($_SESSION['username'])): ?>
+    <button>
+        <a style="text-decoration: none; color: #000" href="insert.php">Create New Product</a>
+    </button>
+    <button>
+        <a style="text-decoration: none; color: #000" href="logout.php">Logout</a>
+    </button>
+    <?php endif; ?>
+    <br />
+    <table border="1" width="500">
+        <tr>
+            <th>ID</th>
+            <th>NAME</th>
+            <th>PRICE</th>
+            <th>SERIAL NUMBER</th>
+            <?php if (isset($_SESSION['username']) && !empty($_SESSION['username'])): ?>
+            <th>DELETE</th>
+            <th>UPDATE</th>
+            <?php endif; ?>
+        </tr>
+        <?php foreach($data as $user): ?>
+        <tr>
+            <td><?= $user['id']; ?></td>
+            <td><?= $user['name']; ?></td>
+            <td><?= $user['price']; ?></td>
+            <td><?= $user['serial_number']; ?></td>
+            <?php if (isset($_SESSION['username']) && !empty($_SESSION['username'])): ?>
+            <td>
+                <button>
+                    <a style="text-decoration: none; color: #000" href="delete.php?id=<?= $user['id']; ?>">DELETE</a>
+                </button>
+            </td>
+            <td>
+                <form action="update.php" method="post">
+                    <input type="hidden" name="id" value="<?= $user['id']; ?>">
+                    <button type="submit">UPDATE</button>
+                </form>
+            </td>
+            <?php endif; ?>
+        </tr>
+        <?php endforeach; ?>
+    </table>
 </body>
 </html>
